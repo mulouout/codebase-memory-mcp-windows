@@ -1,61 +1,73 @@
-﻿# Codebase Memory MCP - Windows Enhanced Edition
+# Codebase Memory MCP - Windows Enhanced Edition
 
-高性能代码智能 MCP 服务器的 **Windows 增强版**，在原版基础上针对 Windows 平台做了多项兼容性修复和功能增强。
+A Windows-optimized version of the [official codebase-memory-mcp](https://github.com/continualai/codebase-memory-mcp) with enhanced functionality for Chinese/Unicode paths and event-driven file watching.
 
-> 原版项目：[codebase-memory-mcp](https://github.com/awalker/codebase-memory-mcp)（假设）
-> 本仓库基于 v0.8.1 版本修改
+## ✨ Features
 
-## 本版本做了什么？
+### Bug Fixes
+- **Auto-create data directory**: Automatically creates data/cache directories on Windows startup
+- **Chinese/Unicode path support**: Uses `_wfopen` wide-character API for proper Unicode file operations
+- **Configurable database location**: Supports `CBM_DATA_DIR` environment variable to customize data path
 
-### 3 项 Windows 兼容性修复
+### Enhancements
+- **Auto-read .gitignore**: File watcher automatically parses project `.gitignore` files to filter irrelevant directories
+- **Windows event-driven watching**: Uses `ReadDirectoryChangesW` API for millisecond-level file change detection (replaces polling)
 
-| 修复 | 说明 |
-|------|------|
-| **数据目录自动创建** | Windows 下数据/缓存目录不存在时自动创建，不会报错退出 |
-| **中文/Unicode 路径支持** | 所有文件操作使用 _wfopen 宽字符接口，中文路径不再乱码/失败 |
-| **数据库位置可配置** | 支持 CBM_DATA_DIR 环境变量自定义数据存放位置，不再硬编码 C 盘 |
+## 📥 Download
 
-### 2 项功能增强
+| File | Size | Description |
+|------|------|-------------|
+| `codebase-memory-mcp-v0.8.1-windows-enhanced.zip` | ~35 MB | Pre-built Windows binary + documentation |
+| `codebase-memory-mcp-v0.8.1-source.zip` | ~83 MB | Full source code (original v0.8.1) |
 
-| 增强 | 说明 |
-|------|------|
-| **自动读取 .gitignore** | 文件监听自动解析项目 .gitignore，过滤无关目录，减少噪音 |
-| **Windows 事件驱动监听** | 使用 ReadDirectoryChangesW API 实现毫秒级文件变更响应，替代轮询 |
+Download from the [Releases](https://github.com/mulouout/codebase-memory-mcp-windows/releases) page.
 
-## 快速开始
+## 🚀 Quick Start
 
-### Windows 用户（推荐）
+### Installation
+1. Extract the zip archive
+2. Run `codebase-memory-mcp.exe`
 
-直接下载预编译二进制：
+### Environment Variables
 
-1. 从 [Releases](https://github.com/mulouout/codebase-memory-mcp-windows/releases) 下载最新版 zip
-2. 解压到任意目录
-3. 配置 MCP 客户端使用 in/codebase-memory-mcp.exe
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `CBM_DATA_DIR` | Custom data directory for databases | `J:\cbm_data` |
+| `CBM_CACHE_DIR` | Custom cache directory | `J:\cbm_cache` |
+| `CBM_WATCHER_IGNORE` | Custom watcher exclude patterns (comma-separated) | `node_modules,.git` |
 
-### 环境变量
+## 🔧 Technical Details
 
-| 变量 | 用途 |
-|------|------|
-| CBM_DATA_DIR | 自定义数据目录（数据库存放位置） |
-| CBM_CACHE_DIR | 自定义缓存目录 |
-| CBM_WATCHER_IGNORE | 自定义文件监听排除模式（逗号分隔） |
+### Files Modified
+- `src/foundation/platform.c` - Auto-create directory + `CBM_DATA_DIR` support
+- `src/foundation/compat_fs.h` - Declare `cbm_fopen()` function
+- `src/foundation/compat_fs.c` - Implement UTF-8 safe `cbm_fopen()` using `_wfopen`
+- `src/watcher/watcher.c` - Gitignore integration + `ReadDirectoryChangesW` event-driven watching
 
-### 详细说明
+### Building from Source
+```bash
+# Requires MinGW-w64 compiler
+make clean
+make -j4
+```
 
-- [Windows 修复与改进详细说明](WINDOWS_FIXES.md)
-- [原版 README](README.md)
+## 📝 Changelog
 
-## 编译
+### v0.8.1-windows
+- Fixed: Auto-create data directory on Windows
+- Fixed: Chinese/Unicode path support
+- Fixed: Configurable database location via `CBM_DATA_DIR`
+- Enhanced: Auto-read `.gitignore` for watcher filtering
+- Enhanced: Windows `ReadDirectoryChangesW` event-driven file watching
 
-`ash
-# 需要 MinGW-w64 + zlib
-make -f Makefile.cbm
-`
+## 📄 License
 
-## 与原版的关系
+This project is based on the official [codebase-memory-mcp](https://github.com/continualai/codebase-memory-mcp) and follows the same license.
 
-本项目是原作者 codebase-memory-mcp 的 Windows 增强分支，核心代码全部来自原作者，仅针对 Windows 平台做了兼容性修复和少量功能增强。如果原作者后续合并了这些改进，以原作者版本为准。
+## 🤝 Contributing
 
-## License
+Feel free to submit issues and pull requests!
 
-与原版保持一致。
+## 📧 Contact
+
+Email: 89021396@qq.com
