@@ -38,9 +38,48 @@ Environment Variables / 环境变量:
 
 | Variable / 变量 | Description / 说明 | Example / 示例 |
 |----------|-------------|---------|
-| CBM_DATA_DIR | Data directory / 数据存储目录 | D:\cbm_data |
-| CBM_CACHE_DIR | Cache directory / 缓存目录 | D:\cbm_cache |
+| CBM_DATA_DIR | Data directory / 数据存储目录 | D:\\cbm_data |
+| CBM_CACHE_DIR | Cache directory / 缓存目录 | D:\\cbm_cache |
 | CBM_WATCHER_IGNORE | Watcher exclude / 监听排除模式 | *.log;*.tmp;temp_dir |
+
+---
+
+## Troubleshooting / 排错指南
+
+### CBM_DATA_DIR not working in TRAE IDE / TRAE 中 CBM_DATA_DIR 不生效
+
+EN: When configuring codebase-memory in TRAE IDE's mcp.json, the env block (CBM_DATA_DIR) may not be properly injected into the child process. This causes the program to fall back to a garbled directory under the user's root drive (e.g., J:\licenses on Chinese systems).
+
+CN: 在 TRAE IDE 的 mcp.json 中配置 codebase-memory 时，env 块 (CBM_DATA_DIR) 可能无法正确注入到子进程，导致程序回退到用户根目录下的乱码文件夹（中文系统下会看到 J:\licenses 之类的乱码目录）。
+
+**Solution / 解决方案**:
+
+EN: Create a batch wrapper script that sets the environment variable before launching the executable, then point mcp.json to the wrapper instead of the exe.
+
+CN: 创建一个批处理包装脚本，在启动 exe 之前设置环境变量，然后将 mcp.json 指向该批处理脚本而非 exe。
+
+Create launch_cbm.bat next to codebase-memory-mcp.exe / 在 exe 旁边创建 launch_cbm.bat:
+```bat
+@echo off
+set "CBM_DATA_DIR=J:\path\to\your\data\dir"
+"%~dp0codebase-memory-mcp.exe" %*
+```
+
+Update mcp.json / 更新 mcp.json:
+```
+{
+  "mcpServers": {
+    "codebase-memory": {
+      "command": "J:/path/to/launch_cbm.bat",
+      "args": [],
+      "env": {}
+    }
+  }
+}
+```
+
+EN: After restarting TRAE IDE, the program will read CBM_DATA_DIR correctly and data files will be placed in the specified directory.
+CN: 重启 TRAE IDE 后，程序将正确读取 CBM_DATA_DIR，数据文件将存放在指定目录中。
 
 ---
 
